@@ -1,15 +1,16 @@
 import { Request, Response } from 'express';
+import { AuthenticatedRequest } from '../types/AuthenticatedRequest'; 
 import { PostService } from '../services/postService';
 
 export class PostController {
-  static async createPost(req: Request, res: Response) {
+  static async createPost(req: AuthenticatedRequest, res: Response) {
     try {
       if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
       }
 
       const { title, content, type } = req.body;
-      const userId = req.user.id;  // Aquí ya sabemos que req.user existe
+      const userId = req.user.id;  // Usa la interfaz extendida
       const post = await PostService.createPost(userId, title, content, type);
       res.status(201).json(post);
     } catch (error) {
@@ -17,7 +18,7 @@ export class PostController {
     }
   }
 
-  static async updatePost(req: Request, res: Response) {
+  static async updatePost(req: AuthenticatedRequest, res: Response) {
     try {
       if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
@@ -32,7 +33,7 @@ export class PostController {
     }
   }
 
-  static async deletePost(req: Request, res: Response) {
+  static async deletePost(req: AuthenticatedRequest, res: Response) {
     try {
       if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });

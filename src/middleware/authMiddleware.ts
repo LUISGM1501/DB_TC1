@@ -3,7 +3,11 @@ import * as jwt from 'jsonwebtoken';
 import { AppDataSource } from '../config/database';
 import { User } from '../models/User';
 
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+interface AuthenticatedRequest extends Request {
+  user?: User;
+}
+
+export const authMiddleware = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const token = req.headers['authorization'];
 
   if (!token) {
@@ -19,7 +23,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    req.user = user;  // Establece req.user con el usuario autenticado
+    req.user = user;  // Asigna user al objeto request
     next();
   } catch (error) {
     return res.status(401).json({ message: 'Unauthorized' });
