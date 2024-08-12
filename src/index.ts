@@ -1,9 +1,11 @@
 import express from 'express';
 import { AppDataSource } from './config/database';
+import { setupSwagger } from './config/swagger';
 import { authMiddleware } from './middleware/authMiddleware';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import postRoutes from './routes/postRoutes'; 
+
 
 const app = express();
 
@@ -11,6 +13,8 @@ AppDataSource.initialize()
   .then(() => {
     console.log('Database connected');
     app.use(express.json());
+
+    setupSwagger(app);  // Swagger para la documentación de apis
 
     app.use(authMiddleware);  // Aplica el middleware de autenticación globalmente
 

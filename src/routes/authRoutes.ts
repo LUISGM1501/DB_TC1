@@ -3,7 +3,66 @@ import { AuthController } from '../controllers/authController';
 
 const router = Router();
 
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Registra un nuevo usuario
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *                 enum: [Admin, Editor, Reader]
+ *     responses:
+ *       201:
+ *         description: Usuario registrado
+ *       400:
+ *         description: Error en la solicitud
+ */
 router.post('/register', AuthController.register);
+
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Autentica un usuario y devuelve un JWT
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Usuario autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *       400:
+ *         description: Credenciales inválidas
+ */
 router.post('/login', AuthController.login);
 
 export default router;

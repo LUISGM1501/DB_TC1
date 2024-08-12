@@ -1,30 +1,73 @@
 import { Router } from 'express';
-import { UserService } from '../services/userService';
+import { UserController } from '../controllers/userController';
 import { authorize } from '../middleware/roleMiddleware';
 
 const router = Router();
 
-// Ruta para actualizar un usuario, protegida para administradores
-router.put('/user/:id', authorize(['Admin']), async (req, res) => {
-  try {
-    const id = parseInt(req.params.id);
-    const updates = req.body;
-    const updatedUser = await UserService.updateUser(id, updates);
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    res.status(400).json({ message: (error as any).message });
-  }
-});
+/**
+ * @swagger
+ * /users/user/{id}:
+ *   put:
+ *     summary: Actualiza un usuario existente
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID del usuario
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *                 enum: [Admin, Editor, Reader]
+ *     responses:
+ *       200:
+ *         description: Usuario actualizado
+ *       400:
+ *         description: Error en la solicitud
+ *       404:
+ *         description: Usuario no encontrado
+ */
+// Ruta para actualizar a un usuario
+router.put('/user/:id', authorize(['Admin']), UserController.updateUser);
 
-// Ruta para eliminar un usuario, protegida para administradores
-router.delete('/user/:id', authorize(['Admin']), async (req, res) => {
-  try {
-    const id = parseInt(req.params.id);
-    await UserService.deleteUser(id);
-    res.status(204).send();  // 204 No Content
-  } catch (error) {
-    res.status(400).json({ message: (error as any).message });
-  }
-});
+/**
+ * @swagger
+ * /users/user/{id}:
+ *   delete:
+ *     summary: Elimina un usuario
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID del usuario
+ *     responses:
+ *       204:
+ *         description: Usuario eliminado
+ *       400:
+ *         description: Error en la solicitud
+ *       404:
+ *         description: Usuario no encontrado
+ */
+// Ruta para eliminar a un usuario
+router.delete('/user/:id', authorize(['Admin']), UserController.deleteUser);
 
 export default router;
