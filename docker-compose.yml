@@ -44,6 +44,9 @@ services:
     command: ["start-dev"] 
     depends_on:
       - database
+    volumes:
+      - keycloak_data:/opt/jboss/keycloak/standalone/data
 
 volumes:
+  keycloak_data:
   postgres_data:

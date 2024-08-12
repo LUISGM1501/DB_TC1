@@ -5,6 +5,9 @@ import { PostService } from '../services/postService';
 export class PostController {
   static async createPost(req: AuthenticatedRequest, res: Response) {
     try {
+      // Agrega un log para verificar si req.user está definido
+      console.log("User in createPost:", req.user);
+
       if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
       }
