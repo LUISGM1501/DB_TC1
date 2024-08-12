@@ -1,13 +1,19 @@
-import { AppDataSource } from '../config/database'; 
+import { AppDataSource } from '../config/database';
 import { User } from '../models/User';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcryptjs';
 
 export class AuthService {
-  static async register(username: string, email: string, password: string) {
+  static async register(username: string, email: string, password: string, role: string = 'Reader') {
     const userRepository = AppDataSource.getRepository(User);
+
+    // Solo permitir a los administradores asignar roles diferentes
+    if (role !== 'Reader' && role !== 'Editor' && role !== 'Admin') {
+      throw new Error('Invalid role');
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = userRepository.create({ username, email, password: hashedPassword, role: 'Reader' });
+    const user = userRepository.create({ username, email, password: hashedPassword, role });
     await userRepository.save(user);
     return user;
   }

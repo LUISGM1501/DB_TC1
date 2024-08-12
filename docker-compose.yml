@@ -16,7 +16,7 @@ services:
 
   database:
     image: postgres
-    container_name: postgres_container
+    container_name: Container_TC1
     ports:
       - '5432:5432'
     environment:

@@ -1,19 +1,23 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Post } from './Post';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id: number = 0;
+  id!: number;
 
   @Column()
-  username: string = '';
+  username!: string;
 
   @Column()
-  email: string = '';
+  email!: string;
 
   @Column()
-  password: string = '';
+  password!: string;
 
   @Column()
-  role: string = 'Reader';
+  role!: string;
+
+  @OneToMany(() => Post, post => post.user)
+  posts!: Post[];  // Relación con los posts
 }
