@@ -6,7 +6,7 @@ const swaggerOptions = {
   swaggerDefinition: {
     openapi: '3.0.0',
     info: {
-      title: 'REST API Documentation',
+      title: 'Docker REST API Documentation',
       version: '1.0.0',
       description: 'API documentation for the Docker REST API project',
     },
