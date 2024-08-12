@@ -13,6 +13,7 @@ services:
       - DB_NAME=DB_TC1
     depends_on:
       - database
+      - keycloak
 
   database:
     image: postgres
@@ -25,6 +26,22 @@ services:
       POSTGRES_PASSWORD: password
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: database
+      DB_DATABASE: DB_TC1
+      DB_USER: user
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    command: ["start-dev"] 
+    depends_on:
+      - database
 
 volumes:
   postgres_data:

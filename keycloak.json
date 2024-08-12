@@ -1,0 +1,12 @@
+{
+    "realm": "MyRealm",
+    "auth-server-url": "http://localhost:8080/auth/",
+    "ssl-required": "none",
+    "resource": "my-app",
+    "credentials": {
+      "secret": "your-client-secret"
+    },
+    "confidential-port": 0,
+    "bearer-only": true
+  }
+  

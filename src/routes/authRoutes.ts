@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { keycloak } from '../config/keycloak';
 import { AuthController } from '../controllers/authController';
 
 const router = Router();
@@ -30,8 +31,10 @@ const router = Router();
  *         description: Usuario registrado
  *       400:
  *         description: Error en la solicitud
+ *       403:
+ *         description: Acceso denegado
  */
-router.post('/register', AuthController.register);
+router.post('/register', keycloak.protect('Admin'), AuthController.register);
 
 /**
  * @swagger
