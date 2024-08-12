@@ -43,4 +43,21 @@ export class PostService {
 
     await postRepository.remove(post);
   }
+
+  static async getAllPosts() {
+    const postRepository = AppDataSource.getRepository(Post);
+    const posts = await postRepository.find({ relations: ['user'] });
+    return posts;
+  }
+
+  static async getPostById(postId: number) {
+    const postRepository = AppDataSource.getRepository(Post);
+    const post = await postRepository.findOne({ where: { id: postId }, relations: ['user'] });
+
+    if (!post) {
+      throw new Error('Post not found');
+    }
+
+    return post;
+  }
 }

@@ -46,4 +46,36 @@ export class PostController {
       res.status(400).json({ message: (error as any).message });
     }
   }
+
+  static async getAllPosts(req: AuthenticatedRequest, res: Response) {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      const posts = await PostService.getAllPosts();
+      res.status(200).json(posts);
+    } catch (error) {
+      res.status(400).json({ message: (error as any).message });
+    }
+  }
+
+  static async getPostById(req: AuthenticatedRequest, res: Response) {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      const postId = parseInt(req.params.id);
+      const post = await PostService.getPostById(postId);
+      
+      if (!post) {
+        return res.status(404).json({ message: 'Post not found' });
+      }
+
+      res.status(200).json(post);
+    } catch (error) {
+      res.status(400).json({ message: (error as any).message });
+    }
+  }
 }
