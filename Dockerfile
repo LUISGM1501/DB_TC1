@@ -12,8 +12,9 @@ RUN npm install
 
 # Copia el resto de los archivos de la aplicación
 COPY . .
-COPY keycloak.json /usr/src/app/keycloak.json
 
+# Copia el archivo keycloak.json al directorio raíz del contenedor
+COPY keycloak.json /usr/src/app/keycloak.json
 
 # Compila el código TypeScript
 RUN npm run build

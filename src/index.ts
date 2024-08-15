@@ -6,6 +6,7 @@ import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import postRoutes from './routes/postRoutes';
 import { setupSwagger } from './config/swagger';
+import 'dotenv/config';
 
 const app = express();
 

@@ -1,10 +1,10 @@
 {
-    "realm": "MyRealm",
+    "realm": "DockerRestApi_DB",
     "auth-server-url": "http://localhost:8080/auth/",
     "ssl-required": "none",
-    "resource": "my-app",
+    "resource": "DockerRestApiClient",
     "credentials": {
-      "secret": "your-client-secret"
+      "secret": "dUVyGr6FEnNxova7dpMkhwc1oobHQpnV"
     },
     "confidential-port": 0,
     "bearer-only": true

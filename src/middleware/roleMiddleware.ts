@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 export function authorize(roles: string[]) {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     if (!req.headers.authorization) {
+      console.log("No authorization header found.");
       return res.status(403).json({ message: 'Access denied' });
     }
 
@@ -21,12 +22,14 @@ export function authorize(roles: string[]) {
 
       const hasRole = roles.some(role => userRoles.includes(role));
       if (!hasRole) {
+        console.log("User does not have the required role.");
         return res.status(403).json({ message: 'Access denied' });
       }
 
-      // Si todo está bien, continúa con la siguiente función
+      req.user = decodedToken; // Asegurando que el token decodificado se guarda en req.user
       next();
     } catch (error) {
+      console.log("Token decoding failed:", error);
       return res.status(403).json({ message: 'Invalid token' });
     }
   };

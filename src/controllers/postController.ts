@@ -17,7 +17,9 @@ export class PostController {
       const post = await PostService.createPost(userId, title, content, type);
       res.status(201).json(post);
     } catch (error) {
-      res.status(400).json({ message: (error as any).message });
+      res.status(400).json({ message: (error as any).message 
+        + "Req: " + req
+      });
     }
   }
 

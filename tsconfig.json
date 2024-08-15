@@ -10,6 +10,7 @@
       "rootDir": "./src",
       "experimentalDecorators": true,
       "emitDecoratorMetadata": true,
+      "sourceMap": true,
     },
     "include": ["src/**/*"],
     "exclude": ["node_modules"]

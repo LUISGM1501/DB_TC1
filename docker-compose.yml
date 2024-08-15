@@ -5,15 +5,16 @@ services:
     build: .
     ports:
       - '3000:3000'
-    environment:
-      - DB_HOST=database
-      - DB_PORT=5432
-      - DB_USERNAME=user
-      - DB_PASSWORD=password
-      - DB_NAME=DB_TC1
+    env_file:
+      - .env  # Aquí se especifica el archivo .env
     depends_on:
       - database
       - keycloak
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
 
   database:
     image: postgres
@@ -21,9 +22,9 @@ services:
     ports:
       - '5432:5432'
     environment:
-      POSTGRES_DB: DB_TC1
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -32,9 +33,9 @@ services:
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: database
-      DB_DATABASE: DB_TC1
-      DB_USER: user
-      DB_PASSWORD: password
+      DB_DATABASE: ${DB_NAME}
+      DB_USER: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
       KEYCLOAK_ADMIN: admin
