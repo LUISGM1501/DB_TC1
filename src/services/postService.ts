@@ -3,7 +3,7 @@ import { Post } from '../models/Post';
 import { User } from '../models/User';
 
 export class PostService {
-  static async createPost(userId: number, title: string, content: string, type: string = 'text') {
+  static async createPost(userId: string, title: string, content: string, type: string = 'text') {
     const postRepository = AppDataSource.getRepository(Post);
     const userRepository = AppDataSource.getRepository(User);
 
@@ -19,7 +19,7 @@ export class PostService {
     return post;
   }
 
-  static async updatePost(postId: number, updates: Partial<Post>) {
+  static async updatePost(postId: string, updates: Partial<Post>) {
     const postRepository = AppDataSource.getRepository(Post);
     let post = await postRepository.findOne({ where: { id: postId } });
 
@@ -33,7 +33,7 @@ export class PostService {
     return post;
   }
 
-  static async deletePost(postId: number) {
+  static async deletePost(postId: string) {
     const postRepository = AppDataSource.getRepository(Post);
     const post = await postRepository.findOne({ where: { id: postId } });
 
@@ -50,7 +50,7 @@ export class PostService {
     return posts;
   }
 
-  static async getPostById(postId: number) {
+  static async getPostById(postId: string) {
     const postRepository = AppDataSource.getRepository(Post);
     const post = await postRepository.findOne({ where: { id: postId }, relations: ['user'] });
 
