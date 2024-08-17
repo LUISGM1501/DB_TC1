@@ -23,14 +23,16 @@ export class PostService {
     const postRepository = AppDataSource.getRepository(Post);
     let post = await postRepository.findOne({ where: { id: postId } });
 
+
+
     if (!post) {
       throw new Error('Post not found');
     }
 
     postRepository.merge(post, updates);
-    await postRepository.save(post);
+    const updatePost = await postRepository.save(post);
 
-    return post;
+    return updatePost;
   }
 
   static async deletePost(postId: string) {
