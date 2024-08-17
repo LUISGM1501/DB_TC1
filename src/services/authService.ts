@@ -14,8 +14,9 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = userRepository.create({ username, email, password: hashedPassword, role });
-    await userRepository.save(user);
-    return user;
+    const savedUser = await userRepository.save(user);
+   
+    return savedUser;
   }
 
   static async login(email: string, password: string) {
