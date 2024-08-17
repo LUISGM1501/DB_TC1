@@ -19,12 +19,11 @@ ENV PATH /usr/src/app/node_modules/.bin:$PATH
 # Copia el resto del código fuente
 COPY . .
 
-# Ejecuta la compilación
-
 # Copia el archivo keycloak.json al directorio raíz del contenedor
 COPY keycloak.json /usr/src/app/keycloak.json
 
 # Compila el código TypeScript
+# Ejecuta la compilación
 RUN npm run build
 
 # Expone el puerto de la aplicación
