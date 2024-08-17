@@ -23,16 +23,15 @@ export const authMiddleware = async (req: AuthenticatedRequest, res: Response, n
   const token = req.headers['authorization']?.split(' ')[1];
 
   if (!token) {
+    console.log("No token provided.");
     return res.status(401).json({ message: 'Unauthorized, no token' });
   }
 
   try {
     const decoded = jwt.verify(token, publicKey, { algorithms: ['RS256'] });
     
-    // Log detallado del token decodificado
-    console.log("Decoded token:", decoded);
+    console.log("Decoded token in authMiddleware:", decoded);
 
-    // Aquí usamos el campo 'sub' como ID del usuario
     const userId = (decoded as any).sub;
 
     if (!userId) {
@@ -48,9 +47,14 @@ export const authMiddleware = async (req: AuthenticatedRequest, res: Response, n
       return res.status(401).json({ message: 'Unauthorized, no user, No user found with ID: ' + userId });
     }
 
-    req.user = user;
+    console.log("User found in DB:", user);
+
+    req.user = user; // Aquí estamos asegurándonos de que `req.user` sea una instancia completa de `User`
+    console.log("req.user set in authMiddleware:", req.user);
+
     next();
   } catch (error) {
+    console.log("Error verifying token:", error);
     return res.status(401).json({ 
       message: 'Unauthorized, error', 
       error: (error as any).message, 

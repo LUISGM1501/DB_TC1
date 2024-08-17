@@ -1,25 +1,35 @@
 import { Request, Response } from 'express';
 import { AuthenticatedRequest } from '../types/AuthenticatedRequest'; 
 import { PostService } from '../services/postService';
+import { User } from '../models/User';
 
 export class PostController {
   static async createPost(req: AuthenticatedRequest, res: Response) {
     try {
       console.log("User in createPost:", req.user);
-
+  
       if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized, no req.user' });
       }
-
+  
       const { title, content, type } = req.body;
-      const userId = req.user.id as string;  // Asegurarse que sea un string
+  
+      // Verifica si req.user tiene el id
+      if (!req.user.id) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+  
+      const userId = req.user.id;
+      console.log("userId being passed to PostService.createPost:", userId);
+  
       const post = await PostService.createPost(userId, title, content, type);
       res.status(201).json(post);
     } catch (error) {
+      console.log("Error in createPost:", error);
       res.status(400).json({ message: (error as any).message });
     }
   }
-
+  
   static async updatePost(req: AuthenticatedRequest, res: Response) {
     try {
       if (!req.user) {

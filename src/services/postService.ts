@@ -7,15 +7,19 @@ export class PostService {
     const postRepository = AppDataSource.getRepository(Post);
     const userRepository = AppDataSource.getRepository(User);
 
+    console.log("Finding user in PostService with userId:", userId);
     const user = await userRepository.findOne({ where: { id: userId } });
 
     if (!user) {
       throw new Error('User not found');
     }
 
+    console.log("Creating post with the following user:", user);
+
     const post = postRepository.create({ title, content, type, user });
     await postRepository.save(post);
 
+    console.log("Post successfully created:", post);
     return post;
   }
 

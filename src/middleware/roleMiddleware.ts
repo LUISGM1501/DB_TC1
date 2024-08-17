@@ -28,7 +28,7 @@ export function authorize(roles: string[]) {
         return res.status(403).json({ message: 'Access denied' });
       }
 
-      req.user = decodedToken;
+      // No sobreescribir req.user, solo verificar roles
       next();
     } catch (error) {
       console.log("Token decoding failed:", error);
