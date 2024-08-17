@@ -1,6 +1,7 @@
 import { User } from '../src/models/User';
 import { UserService } from '../src/services/userService';
 import { AppDataSource } from '../src/config/database';
+import { v4 as uuidv4 } from 'uuid'; // Importar la función para generar UUIDs
 
 jest.mock('../src/models/User', () => {
   return {
@@ -36,7 +37,7 @@ describe('UserService', () => {
 
   describe('updateUser', () => {
     it('Probar actualizar usuario existente con id', async () => {
-      const userId = 1;
+      const userId = uuidv4(); // Generar un nuevo UUID para esta prueba
       const updates = { username: 'updatedUser' };
       const mockUser = { id: userId, username: 'originalUser', email: 'test@example.com' };
       
@@ -44,15 +45,7 @@ describe('UserService', () => {
       mockUserRepository.save.mockResolvedValue({ ...mockUser, ...updates });
       mockUserRepository.merge.mockImplementation((user: User, updates: Partial<User>) => Object.assign(user, updates));
 
-      //console.log('Usuario orignial id:', mockUser.id);
-      //console.log('Usuario orignial nombre:', mockUser.username);
-      //console.log('Usuario orignial email:', mockUser.email);
-
       const updatedUser = await UserService.updateUser(userId, updates);
-
-      //console.log('Usuario actualizado id:', updatedUser.id);
-      //console.log('Usuario actualizado nombre:', updatedUser.username);
-      //console.log('Usuario actualizado email:', updatedUser.email);
 
       expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { id: userId } });
       expect(mockUserRepository.save).toHaveBeenCalledWith({ ...mockUser, ...updates });
@@ -60,7 +53,7 @@ describe('UserService', () => {
     });
 
     it('Tirar error cuando no encuentra un usuario para actualizar', async () => {
-      const userId = 1;
+      const userId = uuidv4(); // Generar un nuevo UUID para esta prueba
       const updates = { username: 'updatedUser' };
       
       mockUserRepository.findOne.mockResolvedValue(null);
@@ -70,8 +63,8 @@ describe('UserService', () => {
   });
 
   describe('deleteUser', () => {
-    it('Probar elminar usuario existente con id', async () => {
-      const userId = 1;
+    it('Probar eliminar usuario existente con id', async () => {
+      const userId = uuidv4(); // Generar un nuevo UUID para esta prueba
       const mockUser = { id: userId, username: 'userToDelete', email: 'test@example.com' };
       
       mockUserRepository.findOne.mockResolvedValue(mockUser);
@@ -83,7 +76,7 @@ describe('UserService', () => {
     });
 
     it('Tirar error cuando no encuentra un usuario para eliminar', async () => {
-      const userId = 1;
+      const userId = uuidv4(); // Generar un nuevo UUID para esta prueba
       
       mockUserRepository.findOne.mockResolvedValue(null);
 
@@ -91,4 +84,3 @@ describe('UserService', () => {
     });
   });
 });
-
