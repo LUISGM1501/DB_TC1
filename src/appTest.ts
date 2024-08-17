@@ -19,8 +19,8 @@ app.use(session({
 app.use(keycloak.middleware());
 app.use(express.json());
 app.use('/auth', authRoutes);
-app.use('/users', keycloak.protect(), userRoutes);
-app.use('/posts', keycloak.protect(), postRoutes);
+app.use('/users', userRoutes);
+app.use('/posts', postRoutes);
 setupSwagger(app);
 
 export default app;
