@@ -2,6 +2,7 @@ import { Post } from '../src/models/Post';
 import { User } from '../src/models/User';
 import { PostService } from '../src/services/postService';
 import { AppDataSource } from '../src/config/database';
+import { v4 as uuidv4 } from 'uuid';
 
 jest.mock('../src/models/User', () => {
   return {
@@ -51,7 +52,8 @@ describe('PostService', () => {
   });
 
   it('Crear un post con un usuario existente', async () => {
-    const user = { id: 1, username: 'testuser' } as User;
+    const userId = uuidv4();
+    const user = { id: userId, username: 'testuser', email: 'test@example.com', password: 'hashedPassword', role: 'Reader' } as User;
     const post = { title: 'Titulo', content: 'Prueba de publicación', type: 'text', user } as Post;
 
     mockUserRepository.findOne.mockResolvedValue(user);
@@ -66,41 +68,40 @@ describe('PostService', () => {
     expect(result).toEqual(post);
   });
 
-  it('Tirar error cuando se cree post con usuario invalido', async () => {
+  it('Tirar error cuando se cree post con usuario inválido', async () => {
+    const userId = uuidv4();
     mockUserRepository.findOne.mockResolvedValue(null);
 
-    await expect(PostService.createPost(1, 'Test Post', 'This is a test post content', 'text')).rejects.toThrow('User not found');
+    await expect(PostService.createPost(userId, 'Test Post', 'This is a test post content', 'text')).rejects.toThrow('User not found');
   });
 
   it('Probar actualizar un post existente con id', async () => {
-        const postId = 1;
-        const updates = { title: 'New Title', content: 'New content' };
-        const mockPost = { id: postId, title: 'Old Title', content: 'Old content', type: 'text', user: { id: 1, username: 'user1' } } as Post;
+    const postId = uuidv4();
+    const updates = { title: 'New Title', content: 'New content' };
+    const mockPost = { id: postId, title: 'Old Title', content: 'Old content', type: 'text', user: { id: uuidv4(), username: 'user1', email: 'user1@example.com', password: 'hashedPassword', role: 'Reader' } } as Post;
 
-        mockPostRepository.findOne.mockResolvedValue(mockPost);
-        mockPostRepository.save.mockResolvedValue({ ...mockPost, ...updates });
-        mockPostRepository.merge.mockImplementation((post: Post, updates: Partial<Post>) => Object.assign(post, updates));
+    mockPostRepository.findOne.mockResolvedValue(mockPost);
+    mockPostRepository.save.mockResolvedValue({ ...mockPost, ...updates });
+    mockPostRepository.merge.mockImplementation((post: Post, updates: Partial<Post>) => Object.assign(post, updates));
 
-        // Prueba de la función de actualización del post
-        const updatedPost = await PostService.updatePost(postId, updates);
+    const updatedPost = await PostService.updatePost(postId, updates);
 
-        // Verificaciones
-        expect(mockPostRepository.findOne).toHaveBeenCalledWith({ where: { id: postId } });
-        expect(mockPostRepository.save).toHaveBeenCalledWith({ ...mockPost, ...updates });
-        expect(updatedPost.title).toBe('New Title');
-        expect(updatedPost.content).toBe('New content');
+    expect(mockPostRepository.findOne).toHaveBeenCalledWith({ where: { id: postId } });
+    expect(mockPostRepository.save).toHaveBeenCalledWith({ ...mockPost, ...updates });
+    expect(updatedPost.title).toBe('New Title');
+    expect(updatedPost.content).toBe('New content');
   });
-  
-
 
   it('Tirar error cuando no se encuentre el post para modificar', async () => {
+    const postId = uuidv4();
     mockPostRepository.findOne.mockResolvedValue(null);
 
-    await expect(PostService.updatePost(1, { title: 'New Title' })).rejects.toThrow('Post not found');
+    await expect(PostService.updatePost(postId, { title: 'New Title' })).rejects.toThrow('Post not found');
   });
 
   it('Eliminar un post de un usuario', async () => {
-    const post = { id: 1, title: 'Test Post', content: 'This is a test post content' } as Post;
+    const postId = uuidv4();
+    const post = { id: postId, title: 'Test Post', content: 'This is a test post content', user: { id: uuidv4(), username: 'user1', email: 'user1@example.com', password: 'hashedPassword', role: 'Reader' } } as Post;
 
     mockPostRepository.findOne.mockResolvedValue(post);
     mockPostRepository.remove.mockResolvedValue(undefined);
@@ -112,15 +113,16 @@ describe('PostService', () => {
   });
 
   it('Tirar error cuando se busca eliminar post no existente', async () => {
+    const postId = uuidv4();
     mockPostRepository.findOne.mockResolvedValue(null);
 
-    await expect(PostService.deletePost(1)).rejects.toThrow('Post not found');
+    await expect(PostService.deletePost(postId)).rejects.toThrow('Post not found');
   });
 
-  it('Obtener todos los post en la aplicacion', async () => {
+  it('Obtener todos los posts en la aplicación', async () => {
     const posts = [
-      { id: 1, title: 'Titulo 1', content: 'Contenido 1', user: { id: 1, username: 'user1' } },
-      { id: 2, title: 'Titulo 2', content: 'Contenido 2', user: { id: 2, username: 'user2' } },
+      { id: uuidv4(), title: 'Titulo 1', content: 'Contenido 1', user: { id: uuidv4(), username: 'user1', email: 'user1@example.com', password: 'hashedPassword', role: 'Reader' } },
+      { id: uuidv4(), title: 'Titulo 2', content: 'Contenido 2', user: { id: uuidv4(), username: 'user2', email: 'user2@example.com', password: 'hashedPassword', role: 'Reader' } },
     ] as Post[];
 
     mockPostRepository.find.mockResolvedValue(posts);
@@ -132,7 +134,8 @@ describe('PostService', () => {
   });
 
   it('Obtener post por id', async () => {
-    const post = { id: 1, title: 'titulo', content: 'contenido', user: { id: 1, username: 'user1' } } as Post;
+    const postId = uuidv4();
+    const post = { id: postId, title: 'titulo', content: 'contenido', user: { id: uuidv4(), username: 'user1', email: 'user1@example.com', password: 'hashedPassword', role: 'Reader' } } as Post;
 
     mockPostRepository.findOne.mockResolvedValue(post);
 
@@ -142,10 +145,10 @@ describe('PostService', () => {
     expect(result).toEqual(post);
   });
 
-  it('Tirar el error si al buscar un post no existente', async () => {
+  it('Tirar error si al buscar un post no existente', async () => {
+    const postId = uuidv4();
     mockPostRepository.findOne.mockResolvedValue(null);
 
-    await expect(PostService.getPostById(1)).rejects.toThrow('Post not found');
+    await expect(PostService.getPostById(postId)).rejects.toThrow('Post not found');
   });
 });
-
