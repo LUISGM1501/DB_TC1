@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/userController';
 import { authorize } from '../middleware/roleMiddleware';
+import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
 
@@ -42,7 +43,7 @@ const router = Router();
  *         description: Usuario no encontrado
  */
 // Ruta para actualizar a un usuario
-router.put('/user/:id', authorize(['Admin']), UserController.updateUser);
+router.put('/user/:id', authMiddleware, authorize(['Admin']), UserController.updateUser);
 
 /**
  * @swagger
@@ -68,6 +69,6 @@ router.put('/user/:id', authorize(['Admin']), UserController.updateUser);
  *         description: Usuario no encontrado
  */
 // Ruta para eliminar a un usuario
-router.delete('/user/:id', authorize(['Admin']), UserController.deleteUser);
+router.delete('/user/:id', authMiddleware, authorize(['Admin']), UserController.deleteUser);
 
 export default router;

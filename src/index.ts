@@ -25,8 +25,8 @@ app.use(express.json());
 
 // Configuración de las rutas
 app.use('/auth', authRoutes);
-app.use('/users', keycloak.protect(), userRoutes); // Protegiendo las rutas de usuario con Keycloak
-app.use('/posts', keycloak.protect(), postRoutes);
+app.use('/users', userRoutes); 
+app.use('/posts', postRoutes); 
 
 // Configuración de Swagger
 setupSwagger(app);

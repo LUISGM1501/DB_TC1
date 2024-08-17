@@ -9,16 +9,18 @@ export function authorize(roles: string[]) {
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    const token = req.headers.authorization.split(' ')[1];  // Asumiendo el formato "Bearer TOKEN"
+    const token = req.headers.authorization.split(' ')[1];
     
     try {
-      const decodedToken: any = jwt.decode(token);  // Decodifica el token para extraer la información
-
-      // Agrega un log para verificar qué contiene req.user y los roles decodificados
+      const decodedToken: any = jwt.decode(token);
       console.log("Decoded Token:", decodedToken);
 
-      const userRoles = decodedToken.realm_access?.roles || [];
-      console.log("User Roles:", userRoles);  // Log para ver qué roles tiene el usuario
+      const userRoles = [
+        ...(decodedToken.realm_access?.roles || []),
+        ...(decodedToken.resource_access?.DockerRestApiClient?.roles || [])
+      ];
+
+      console.log("User Roles:", userRoles);
 
       const hasRole = roles.some(role => userRoles.includes(role));
       if (!hasRole) {
@@ -26,7 +28,7 @@ export function authorize(roles: string[]) {
         return res.status(403).json({ message: 'Access denied' });
       }
 
-      req.user = decodedToken; // Asegurando que el token decodificado se guarda en req.user
+      req.user = decodedToken;
       next();
     } catch (error) {
       console.log("Token decoding failed:", error);
@@ -34,3 +36,4 @@ export function authorize(roles: string[]) {
     }
   };
 }
+

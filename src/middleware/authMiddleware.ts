@@ -8,9 +8,8 @@ interface AuthenticatedRequest extends Request {
   user?: User;
 }
 
-// Coloca el JWK (que es la clave pública en formato JSON) que obtuviste de Keycloak aquí
 const jwk = {
-  kty: "RSA" as const,  // Usamos un literal de tipo 'RSA'
+  kty: "RSA" as const,
   kid: "hlqcrMMhwBYgvqAGKvO1Eedl6tZBfTK4DUEbXkSi6n8",
   use: "sig",
   alg: "RS256",
@@ -18,7 +17,6 @@ const jwk = {
   e: "AQAB",
 };
 
-// Convertir el JWK a PEM
 const publicKey = jwkToPem(jwk);
 
 export const authMiddleware = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

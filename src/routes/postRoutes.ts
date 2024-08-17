@@ -20,7 +20,7 @@ const router = Router();
  *         description: No autorizado
  */
 // Ruta para obtener todos los posts
-router.get('/', authorize(['Admin', 'Editor', 'Reader']), PostController.getAllPosts);
+router.get('/', authMiddleware, authorize(['Admin', 'Editor', 'Reader']), PostController.getAllPosts);
 
 /**
  * @swagger
@@ -46,7 +46,7 @@ router.get('/', authorize(['Admin', 'Editor', 'Reader']), PostController.getAllP
  *         description: No autorizado
  */
 // Ruta para obtener un post por ID
-router.get('/:id', authorize(['Admin', 'Editor', 'Reader']), PostController.getPostById);
+router.get('/:id', authMiddleware, authorize(['Admin', 'Editor', 'Reader']), PostController.getPostById);
 
 /**
  * @swagger
@@ -77,7 +77,7 @@ router.get('/:id', authorize(['Admin', 'Editor', 'Reader']), PostController.getP
  *         description: Error en la solicitud
  */
 // Ruta para crear un nuevo post 
-router.post('/post', authorize(['Admin', 'Editor']), PostController.createPost);
+router.post('/post', authMiddleware, authorize(['Admin', 'Editor']), PostController.createPost);
 
 /**
  * @swagger
@@ -114,7 +114,7 @@ router.post('/post', authorize(['Admin', 'Editor']), PostController.createPost);
  *         description: Post no encontrado
  */
 // Ruta para actualizar un post
-router.put('/post/:id', authorize(['Admin', 'Editor']), PostController.updatePost);
+router.put('/post/:id', authMiddleware, authorize(['Admin', 'Editor']), PostController.updatePost);
 
 /**
  * @swagger
@@ -140,6 +140,6 @@ router.put('/post/:id', authorize(['Admin', 'Editor']), PostController.updatePos
  *         description: Post no encontrado
  */
 // Ruta para eliminar un post
-router.delete('/post/:id', authorize(['Admin']), PostController.deletePost);
+router.delete('/post/:id', authMiddleware, authorize(['Admin']), PostController.deletePost);
 
 export default router;

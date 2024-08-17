@@ -4,7 +4,7 @@
     "ssl-required": "none",
     "resource": "DockerRestApiClient",
     "credentials": {
-      "secret": "dUVyGr6FEnNxova7dpMkhwc1oobHQpnV"
+      "secret": "VaGYhJwtPcp6ovVvWoHSA765qUyvzBaT"
     },
     "confidential-port": 0,
     "bearer-only": true
