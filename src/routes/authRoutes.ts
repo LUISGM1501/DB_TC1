@@ -34,7 +34,9 @@ const router = Router();
  *       403:
  *         description: Acceso denegado
  */
-router.post('/register', keycloak.protect('Admin'), AuthController.register);
+// Ruta para crear un usuario
+//router.post('/register', keycloak.protect('Admin'), AuthController.register);
+router.post('/register', AuthController.register);
 
 /**
  * @swagger
@@ -66,6 +68,7 @@ router.post('/register', keycloak.protect('Admin'), AuthController.register);
  *       400:
  *         description: Credenciales inválidas
  */
+// Ruta para login 
 router.post('/login', AuthController.login);
 
 export default router;

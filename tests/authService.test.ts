@@ -56,7 +56,10 @@ describe('AuthService', () => {
       mockUserRepository.findOne.mockResolvedValue(user);
       (jwt.sign as jest.Mock).mockReturnValue(token);
 
-      const secretKey = process.env.JWT_SECRET_KEY; 
+      const secretKey = process.env.JWT_SECRET;
+      if (!secretKey) {
+        throw new Error("JWT_SECRET no está definido en las variables de entorno");
+      }
 
       const result = await AuthService.login(user.email, 'password123');
 

@@ -2,11 +2,29 @@ import request from 'supertest';
 import { AppDataSource } from '../src/config/database';
 import { User } from '../src/models/User';
 import app from '../src/appTest';
+import dotenv from 'dotenv';
+import { v4 as uuidv4 } from 'uuid';
 
-let userId: number; 
+// Cargar las variables de entorno
+dotenv.config();
+
+let userId: string;
 
 beforeAll(async () => {
-  await AppDataSource.initialize();
+  console.log("DB_HOST:", process.env.DB_HOST);
+  console.log("DB_PORT:", process.env.DB_PORT);
+  console.log("DB_USERNAME:", process.env.DB_USERNAME);
+  console.log("DB_PASSWORD:", process.env.DB_PASSWORD);
+  console.log("DB_NAME:", process.env.DB_NAME);
+  console.log("JWT_SECRET:", process.env.JWT_SECRET);
+
+  try {
+    await AppDataSource.initialize();
+    console.log("Conexión a la base de datos establecida correctamente.");
+  } catch (error) {
+    console.error("Error al inicializar la conexión a la base de datos:", error);
+    throw error;
+  }
 });
 
 afterAll(async () => {
@@ -14,8 +32,7 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-
-  await AppDataSource.getRepository(User).clear();
+  await AppDataSource.getRepository(User).query('DELETE FROM "user" CASCADE;');
 });
 
 describe('Authentication and Authorization Integration Tests', () => {
@@ -30,6 +47,8 @@ describe('Authentication and Authorization Integration Tests', () => {
         role: 'Admin',
       });
 
+    console.log("Response Body:", response.body);
+
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('id');
     expect(response.body.username).toBe('testuser');
@@ -37,22 +56,15 @@ describe('Authentication and Authorization Integration Tests', () => {
     userId = response.body.id;
   });
 
-  it('Crear e iniciar sesión con el mismo usaurio y verificar su token', async () => {
-    await request(app)
-      .post('/auth/register')
-      .send({
-        username: 'testuser',
-        email: 'testuser@example.com',
-        password: 'Test@1234',
-        role: 'Admin',
-      });
-
+  it('Crear e iniciar sesión con el mismo usuario y verificar su token', async () => {
     const response = await request(app)
       .post('/auth/login')
       .send({
         email: 'testuser@example.com',
         password: 'Test@1234',
       });
+
+    console.log("Response Body:", response.body);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('token');
@@ -68,7 +80,6 @@ describe('Authentication and Authorization Integration Tests', () => {
 
     const token = loginResponse.body.token;
 
-
     const protectedResponse = await request(app)
       .put(`/users/user/${userId}`)
       .set('Authorization', `Bearer ${token}`)
@@ -77,6 +88,8 @@ describe('Authentication and Authorization Integration Tests', () => {
         email: 'updatedemail@example.com',
         role: 'Editor',
       });
+
+    console.log("Protected Response Body (Update):", protectedResponse.body);
 
     expect(protectedResponse.status).toBe(200);
   });
@@ -95,6 +108,8 @@ describe('Authentication and Authorization Integration Tests', () => {
       .delete(`/users/user/${userId}`)
       .set('Authorization', `Bearer ${token}`);
 
+    console.log("Protected Response Body (Delete):", protectedResponse.body);
+
     expect(protectedResponse.status).toBe(204); 
   });
 
@@ -108,7 +123,6 @@ describe('Authentication and Authorization Integration Tests', () => {
         role: 'Reader',
       });
 
-    
     const loginResponse = await request(app)
       .post('/auth/login')
       .send({
@@ -118,7 +132,6 @@ describe('Authentication and Authorization Integration Tests', () => {
 
     const token = loginResponse.body.token;
 
-
     const protectedResponse = await request(app)
       .put(`/users/user/${userId}`)
       .set('Authorization', `Bearer ${token}`)
@@ -127,6 +140,8 @@ describe('Authentication and Authorization Integration Tests', () => {
         email: 'updatedemail@example.com',
         role: 'Editor',
       });
+
+    console.log("Protected Response Body (Access Denied):", protectedResponse.body);
 
     expect(protectedResponse.status).toBe(403);
   });

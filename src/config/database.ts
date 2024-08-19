@@ -1,4 +1,6 @@
 import { DataSource } from 'typeorm';
+import { User } from '../models/User';  // Asegúrate de importar todas tus entidades
+import { Post } from '../models/Post';  // Importa otras entidades que necesites
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -7,6 +9,6 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USERNAME as string, 
   password: process.env.DB_PASSWORD as string, 
   database: process.env.DB_NAME as string,  
-  entities: [__dirname + '/../models/*.ts'], 
+  entities: [User, Post],  // Incluye todas tus entidades aquí
   synchronize: true, 
 });
