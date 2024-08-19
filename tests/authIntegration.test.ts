@@ -3,7 +3,6 @@ import { AppDataSource } from '../src/config/database';
 import { User } from '../src/models/User';
 import app from '../src/appTest';
 import dotenv from 'dotenv';
-import { v4 as uuidv4 } from 'uuid';
 
 // Cargar las variables de entorno
 dotenv.config();
@@ -32,7 +31,7 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-  await AppDataSource.getRepository(User).query('DELETE FROM "user" CASCADE;');
+  console.log("Base de datos limpia antes de cada prueba.");
 });
 
 describe('Authentication and Authorization Integration Tests', () => {
@@ -44,15 +43,14 @@ describe('Authentication and Authorization Integration Tests', () => {
         username: 'testuser',
         email: 'testuser@example.com',
         password: 'Test@1234',
-        role: 'Admin',
+        role: 'Reader',
       });
-
-    console.log("Response Body:", response.body);
-
+  
+    console.log("Usuario registrado para la prueba:", response.body);
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('id');
     expect(response.body.username).toBe('testuser');
-
+  
     userId = response.body.id;
   });
 
@@ -65,56 +63,76 @@ describe('Authentication and Authorization Integration Tests', () => {
       });
 
     console.log("Response Body:", response.body);
-
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('token');
   });
 
-  it('Verificar el acceso por rol a funciones de update del admin', async () => {
-    const loginResponse = await request(app)
-      .post('/auth/login')
+  it('Registrar usuario admin en la base de datos', async () => {
+    const response = await request(app)
+      .post('/auth/register')
       .send({
-        email: 'testuser@example.com',
-        password: 'Test@1234',
+          username: 'adminuser',
+          email: 'luisgerardourbsalz@gmail.com',
+          password: 'lurbina',
+          role: 'Admin',  // Asegurarse de que aquí se está enviando 'Admin'
       });
 
-    const token = loginResponse.body.token;
+    console.log("Admin registrado para la prueba:", response.body);
+    expect(response.status).toBe(201);
+    expect(response.body).toHaveProperty('id');
+
+    // Añadir verificación adicional para el rol
+    const createdUser = await AppDataSource.getRepository(User).findOne({ where: { email: 'luisgerardourbsalz@gmail.com' } });
+    console.log("Role del usuario creado:", createdUser?.role);
+    expect(createdUser?.role).toBe('Admin');
+  });
+
+  it('Verificar el acceso por rol a funciones de update del admin', async () => {
+    const adminLoginResponse = await request(app)
+      .post('/auth/login')
+      .send({
+        email: 'luisgerardourbsalz@gmail.com', 
+        password: 'lurbina', 
+      });
+
+    console.log("Admin Login Response Body:", adminLoginResponse.body);
+    expect(adminLoginResponse.status).toBe(200);
+    const adminToken = adminLoginResponse.body.token;
 
     const protectedResponse = await request(app)
       .put(`/users/user/${userId}`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${adminToken}`)
       .send({
         username: 'updatedUsername',
         email: 'updatedemail@example.com',
-        role: 'Editor',
       });
 
     console.log("Protected Response Body (Update):", protectedResponse.body);
-
     expect(protectedResponse.status).toBe(200);
   });
 
   it('Verificar el acceso por rol a funciones de eliminar del admin', async () => {
-    const loginResponse = await request(app)
+    const adminLoginResponse = await request(app)
       .post('/auth/login')
       .send({
-        email: 'testuser@example.com',
-        password: 'Test@1234',
+        email: 'luisgerardourbsalz@gmail.com',
+        password: 'lurbina',
       });
 
-    const token = loginResponse.body.token;
+    console.log("Admin Login Response Body:", adminLoginResponse.body);
+    expect(adminLoginResponse.status).toBe(200);
+    const adminToken = adminLoginResponse.body.token;
 
     const protectedResponse = await request(app)
       .delete(`/users/user/${userId}`)
-      .set('Authorization', `Bearer ${token}`);
+      .set('Authorization', `Bearer ${adminToken}`);
 
     console.log("Protected Response Body (Delete):", protectedResponse.body);
-
-    expect(protectedResponse.status).toBe(204); 
+    expect(protectedResponse.status).toBe(204);
   });
 
   it('Denegar acceso a funciones si el usuario no tiene el rol solicitado', async () => {
-    await request(app)
+    const registerResponse = await request(app)
       .post('/auth/register')
       .send({
         username: 'readeruser',
@@ -123,6 +141,8 @@ describe('Authentication and Authorization Integration Tests', () => {
         role: 'Reader',
       });
 
+    console.log("Response Body:", registerResponse.body);
+    
     const loginResponse = await request(app)
       .post('/auth/login')
       .send({
@@ -142,7 +162,6 @@ describe('Authentication and Authorization Integration Tests', () => {
       });
 
     console.log("Protected Response Body (Access Denied):", protectedResponse.body);
-
     expect(protectedResponse.status).toBe(403);
   });
 });

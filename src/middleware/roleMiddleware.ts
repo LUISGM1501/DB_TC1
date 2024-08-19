@@ -5,35 +5,29 @@ import jwt from 'jsonwebtoken';
 export function authorize(roles: string[]) {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     if (!req.headers.authorization) {
-      console.log("No authorization header found.");
+      console.error("No authorization header found.");
       return res.status(403).json({ message: 'Access denied' });
     }
 
     const token = req.headers.authorization.split(' ')[1];
     
     try {
-      const decodedToken: any = jwt.decode(token);
+      const decodedToken: any = jwt.verify(token, process.env.JWT_SECRET as string);
       console.log("Decoded Token:", decodedToken);
 
-      const userRoles = [
-        ...(decodedToken.realm_access?.roles || []),
-        ...(decodedToken.resource_access?.DockerRestApiClient?.roles || [])
-      ];
+      const userRole = decodedToken.role; 
+      console.log("User Role from token:", userRole);
 
-      console.log("User Roles:", userRoles);
-
-      const hasRole = roles.some(role => userRoles.includes(role));
+      const hasRole = roles.includes(userRole);
       if (!hasRole) {
-        console.log("User does not have the required role.");
+        console.error("User does not have the required role:", userRole, "Required roles:", roles);
         return res.status(403).json({ message: 'Access denied' });
       }
 
-      // No sobreescribir req.user, solo verificar roles
       next();
     } catch (error) {
-      console.log("Token decoding failed:", error);
+      console.error("Token decoding failed:", error);
       return res.status(403).json({ message: 'Invalid token' });
     }
   };
 }
-

@@ -4,30 +4,39 @@ import app from '../src/appTest';
 
 beforeAll(async () => {
     await AppDataSource.initialize(); // Iniciar la conexión a la base de datos
-  });
-  
-  afterAll(async () => {
+});
+
+afterAll(async () => {
     await AppDataSource.destroy(); // Cerrar la conexión después de todas las pruebas
-  });
+});
 
 describe('Prueba de conexiones de la app con las apis', () => {
 
-  it('verificar la comunicación entre las apis y postgressql', async () => {
-    const response = await request(app)
-      .get('/posts');
+    it('verificar la comunicación entre las apis y postgressql', async () => {
+        // Primero asegura que estás autenticado
+        const loginResponse = await request(app)
+            .post('/auth/login')
+            .send({ email: 'luisgerardourbsalz@gmail.com', password: 'lurbina' });
+        const token = loginResponse.body.token;
 
-    expect(response.status).toBe(200);
-  });
+        const response = await request(app)
+            .get('/posts')
+            .set('Authorization', `Bearer ${token}`);
 
-  it('verificar que la app inicie con el docker-compose', async () => {
-    const execSync = require('child_process').execSync;
-    const dockerStatus = execSync('docker-compose ps', { encoding: 'utf-8' });
+        expect(response.status).toBe(200);
+    });
 
-    expect(dockerStatus).toMatch(/Up/);
+    it('verificar que la app inicie con el docker-compose', async () => {
+        const execSync = require('child_process').execSync;
+        const dockerStatus = execSync('docker-compose ps', { encoding: 'utf-8' });
 
-    const response = await request(app)
-      .get('/auth/login');
+        expect(dockerStatus).toMatch(/Up/);
 
-    expect(response.status).toBe(400);
-  });
+        // Realiza la solicitud a /auth/login con POST en lugar de GET
+        const response = await request(app)
+            .post('/auth/login')  // Cambié GET a POST
+            .send({ email: 'luisgerardourbsalz@gmail.com', password: 'lurbina' });
+
+        expect(response.status).toBe(200);  // Ajustado según el comportamiento esperado
+    });
 });
