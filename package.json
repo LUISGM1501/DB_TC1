@@ -10,7 +10,7 @@
     "test:authIntegration": "jest tests/authIntegration.test.ts",
     "test:user-postIntegration": "jest tests/user-postIntegration.test.ts",
     "test:conectionIntegration": "jest tests/conectionIntegration.test.ts",
-    "test": "jest",
+    "test": "jest --runInBand",
     "build": "tsc",
     "start": "ts-node src/index.ts",
     "dev": "ts-node-dev --respawn src/index.ts"

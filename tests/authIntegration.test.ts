@@ -157,9 +157,9 @@ describe('Authentication and Authorization Integration Tests', () => {
     expect(protectedResponse.status).toBe(200);
   });
 
-it('Verificar el acceso por rol a funciones de eliminar del admin', async () => {
+  it('Verificar el acceso por rol a funciones de eliminar del admin', async () => {
     // Registrar el usuario admin al inicio de la prueba
-    await request(app)
+    const registerResponse = await request(app)
       .post('/auth/register')
       .send({
         username: 'adminuser',
@@ -175,6 +175,8 @@ it('Verificar el acceso por rol a funciones de eliminar del admin', async () => 
     if (!adminUser) {
       throw new Error('El usuario admin no fue encontrado en la base de datos antes del intento de login.');
     }
+
+    userId = adminUser.id;  // Aseguramos que `userId` esté asignado
 
     // Intentar iniciar sesión con el usuario admin
     console.log("Attempting to log in admin user:", { email: 'adminuser@example.com', password: 'lurbina' });
@@ -194,12 +196,13 @@ it('Verificar el acceso por rol a funciones de eliminar del admin', async () => 
     console.log("Admin Token:", adminToken);
   
     const protectedResponse = await request(app)
-      .delete(`/users/user/${userId}`)
+      .delete(`/users/user/${userId}`)  // Usar el `userId` asegurado
       .set('Authorization', `Bearer ${adminToken}`);
   
     console.log("Protected Response Body (Delete):", protectedResponse.body);
     expect(protectedResponse.status).toBe(204);
   });
+
 
   it('Denegar acceso a funciones si el usuario no tiene el rol solicitado', async () => {
     const registerResponse = await request(app)
