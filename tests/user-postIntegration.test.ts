@@ -13,9 +13,12 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-  await AppDataSource.getRepository(User).clear();
-  await AppDataSource.getRepository(Post).clear();
+  // Eliminar todos los posts asociados a los usuarios primero
+  await AppDataSource.getRepository(Post).delete({});
+  // Luego eliminar todos los usuarios
+  await AppDataSource.getRepository(User).delete({});
 });
+
 
 describe('Pruebas de Integración de interacción entre Usuarios y Posts', () => {
 

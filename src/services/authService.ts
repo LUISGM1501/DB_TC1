@@ -4,7 +4,7 @@ import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcryptjs';
 
 export class AuthService {
-  static async register(username: string, email: string, password: string, role: string = 'Reader') {
+  static async register(username: string, email: string, password: string, role: string) {
     const userRepository = AppDataSource.getRepository(User);
 
     console.log(`Registering user: ${username}, Role: ${role}`);

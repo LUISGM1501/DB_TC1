@@ -140,6 +140,6 @@ router.put('/post/:id', authMiddleware, authorize(['Admin', 'Editor']), PostCont
  *         description: Post no encontrado
  */
 // Ruta para eliminar un post
-router.delete('/post/:id', authMiddleware, authorize(['Admin']), PostController.deletePost);
+router.delete('/post/:id', authMiddleware, authorize(['Admin', 'Editor']), PostController.deletePost);
 
 export default router;

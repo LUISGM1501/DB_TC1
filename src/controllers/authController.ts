@@ -4,10 +4,11 @@ import { AuthService } from '../services/authService';
 export class AuthController {
   static async register(req: Request, res: Response) {
     try {
-      const { username, email, password } = req.body;
+      const { username, email, password, role } = req.body; 
       console.log(`Attempting to register user: ${email}`);
       
-      const user = await AuthService.register(username, email, password);
+      // Pasar el rol al servicio de autenticación
+      const user = await AuthService.register(username, email, password, role);
       console.log('User registered successfully:', user);
 
       res.status(201).json(user);
