@@ -81,9 +81,10 @@ La documentación completa de la API está disponible y se genera automáticamen
 ### Pasos para Iniciar el Proyecto
 
 1. **Clonar el Repositorio:**
-   ```bash
-   git clone https://github.com/tu-usuario/nombre-del-repositorio.git
-   cd nombre-del-repositorio
+    ```bash
+    git clone https://github.com/LUISGM1501/DB_TC1
+    cd DB_TC1
+    ```
 
 2. **Instalar Dependencias:**
    ```bash
