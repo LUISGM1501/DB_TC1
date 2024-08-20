@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Unique } from 'typeorm';
 import { Post } from './Post';
 
 @Entity()
+@Unique(['email'])  // Asegura que el email sea único
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id!: string;

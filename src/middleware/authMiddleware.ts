@@ -7,7 +7,8 @@ interface AuthenticatedRequest extends Request {
   user?: User;
 }
 
-const secretKey = process.env.JWT_SECRET || ''; // Asegúrate de que JWT_SECRET se está usando aquí
+const secretKey = process.env.JWT_SECRET || ''; // Asegúrate de que JWT_SECRET se está usando correctamente
+console.log("JWT_SECRET usado:", secretKey);
 
 export const authMiddleware = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const token = req.headers['authorization']?.split(' ')[1];
