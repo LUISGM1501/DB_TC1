@@ -4,6 +4,7 @@ import { PostService } from '../src/services/postService';
 import { AppDataSource } from '../src/config/database';
 import { v4 as uuidv4 } from 'uuid';
 
+// Mocks para las entidades User y Post
 jest.mock('../src/models/User', () => {
   return {
     User: jest.fn().mockImplementation(() => {
@@ -20,6 +21,7 @@ jest.mock('../src/models/Post', () => {
   };
 });
 
+// Mock de TypeORM
 jest.mock('typeorm');
 
 describe('PostService', () => {
@@ -27,6 +29,7 @@ describe('PostService', () => {
   let mockUserRepository: any;
 
   beforeEach(() => {
+    // Mock de los métodos del repositorio de Post y User
     mockPostRepository = {
       create: jest.fn(),
       save: jest.fn(),
@@ -40,6 +43,7 @@ describe('PostService', () => {
       findOne: jest.fn(),
     };
 
+    // Mock de la obtención del repositorio de TypeORM
     (AppDataSource.getRepository as jest.Mock).mockImplementation((entity) => {
       if (entity === Post) return mockPostRepository;
       if (entity === User) return mockUserRepository;

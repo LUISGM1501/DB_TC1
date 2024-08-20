@@ -4,21 +4,23 @@ import { User } from '../src/models/User';
 import { Post } from '../src/models/Post';
 import app from '../src/appTest';
 
+// Inicializar la base de datos antes de todas las pruebas
 beforeAll(async () => {
   await AppDataSource.initialize();
 });
 
+// Cerrar la conexión a la base de datos después de todas las pruebas
 afterAll(async () => {
   await AppDataSource.destroy();
 });
 
+// Limpiar la base de datos antes de cada prueba
 beforeEach(async () => {
-  // Eliminar todos los posts asociados a los usuarios primero
+  // Eliminar todos los posts primero, ya que están relacionados con los usuarios
   await AppDataSource.getRepository(Post).delete({});
   // Luego eliminar todos los usuarios
   await AppDataSource.getRepository(User).delete({});
 });
-
 
 describe('Pruebas de Integración de interacción entre Usuarios y Posts', () => {
 

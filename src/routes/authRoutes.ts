@@ -35,7 +35,6 @@ const router = Router();
  *         description: Acceso denegado
  */
 // Ruta para crear un usuario
-//router.post('/register', keycloak.protect('Admin'), AuthController.register);
 router.post('/register', AuthController.register);
 
 /**

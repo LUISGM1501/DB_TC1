@@ -38,38 +38,30 @@ describe('Prueba de conexiones de la app con las apis', () => {
         .post('/auth/login')
         .send({ email: 'luisgerardourbsalz@gmail.com', password: 'lurbina' });
 
-        console.log("Login response status:", loginResponse.status);
-        console.log("Login response body:", loginResponse.body);
-
-
-        if (loginResponse.status !== 200) {
-            console.error('Error logging in:', loginResponse.body);
-        }
-
+        // Verificar el estado de respuesta y obtener el token
+        expect(loginResponse.status).toBe(200);
         const token = loginResponse.body.token;
 
+        // Usar el token para autenticar la solicitud a /posts
         const response = await request(app)
             .get('/posts')
             .set('Authorization', `Bearer ${token}`);
 
-        expect(response.status).toBe(200);
+        expect(response.status).toBe(200);  // Verifica que la respuesta sea 200 OK
     });
 
     it('verificar que la app inicie con el docker-compose', async () => {
         const execSync = require('child_process').execSync;
         const dockerStatus = execSync('docker-compose ps', { encoding: 'utf-8' });
 
-        expect(dockerStatus).toMatch(/Up/);
+        expect(dockerStatus).toMatch(/Up/);  // Verifica que los servicios estén en ejecución
 
         // Realiza la solicitud a /auth/login con POST
         const response = await request(app)
         .post('/auth/login')
         .send({ email: 'luisgerardourbsalz@gmail.com', password: 'lurbina' });
 
-        console.log("Login response status:", response.status);
-        console.log("Login response body:", response.body);
-
-
-        expect(response.status).toBe(200);  // Ajustado según el comportamiento esperado
+        // Verificar el estado de respuesta
+        expect(response.status).toBe(200);  // Verifica que la respuesta sea 200 OK
     });
 });
